@@ -4,19 +4,43 @@ a simple key-value with hash index and persistence database, this is a experimen
 
 ## diagram
 
-### query
+### get
 
 ```mermaid
 sequenceDiagram
     participant user;
     participant index;
+    participant codec;
     participant storage engine;
 
     user ->> index: get(string)
+    index ->> index: query offset and length
     index ->> storage engine: read(offset, length)
-    storage engine ->> index: byte[]
+    storage engine ->> codec: byte[]
+    codec ->> index: byte[]
     index ->> user: byte[]
     user ->> user: deserizalizer
+    
+    Note right of storage engine: default storage engine
+```
+
+### set
+
+```mermaid
+sequenceDiagram
+    participant user;
+    participant serializer;
+    participant index;
+    participant codec;
+    participant storage engine;
+
+    user ->> serializer: serializer(value)
+    serializer ->> user: byte[]
+    user ->> index: set(string, byte[])
+    index ->> codec: set(string, byte[])
+    codec ->> storage engine: append(byte[])
+    storage engine ->> index: (offset, length)
+    index ->> user: boolean result
     
     Note right of storage engine: default storage engine
 ```
