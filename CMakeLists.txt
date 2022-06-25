@@ -10,4 +10,4 @@ endif()
 
 
 
-add_executable(simple-hash-db main.cpp core)
+add_executable(simple-hash-db main.cpp core storage)
