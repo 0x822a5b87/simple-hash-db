@@ -37,3 +37,4 @@ cmake-build-debug/
 Makefile
 cmake_install.cmake
 *.cbp
+simple-hash-db
