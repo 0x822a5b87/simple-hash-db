@@ -3,8 +3,12 @@
 //
 
 #include <iostream>
+#include "core/core.cpp"
 
 int main(int argc, char **argv)
 {
-	std::cout << "hello simple-hash-db" << std::endl;
+	core<std::string> c;
+	c.get("hello");
+	c.set("hello", "world");
+	c.del("hello");
 }
