@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include <sstream>
+#include <json/value.h>
 #include "core/core.cpp"
 #include "storage/storage.cpp"
 
@@ -23,13 +23,19 @@ const char *read(Storage &storage, const char *key)
 }
 
 
-void test0()
+bool assertEqual(Storage& storage)
 {
-//	std::stringstream ss;
-//	Storage           storage(ss, ss);
-	std::ifstream in("/Users/dhy/tmp/db/data");
-	std::ofstream ou("/Users/dhy/tmp/db/data");
-	Storage storage(in, ou);
+	std::string s("this is a long sentence and we used it to test!!!");
+	storage.set("hello0", s.c_str(), s.length());
+	const char *hello0 = storage.get("hello0");
+	assert(std::string(hello0) == s);
+	return true;
+}
+
+void testFileStorage()
+{
+	std::stringstream ss;
+	Storage           storage(ss, ss);
 
 	writeData(storage);
 	assert(std::string(read(storage, "hello0")) == "world0");
@@ -45,14 +51,23 @@ void test0()
 	assert(storage.get("hello0") == nullptr);
 	assert(storage.get("hello4") == nullptr);
 	assert(storage.get("hello-1") == nullptr);
-	std::string s("this is a long sentence and we used it to test!!!");
-	storage.set("hello0", s.c_str(), s.length());
-	assert(storage.get("hello0") == s);
+	assertEqual(storage);
+}
+
+void testJson()
+{
+	Json::Value json;
+	json["name"] = "Wiki";
+	json["age"]  = 18;
+
+	assert(json["name"] == "Wiki");
+	assert(json["age"] == 18);
 }
 
 int main(int argc, char **argv)
 {
-	test0();
+	testFileStorage();
+	testJson();
 
 	return 0;
 }
