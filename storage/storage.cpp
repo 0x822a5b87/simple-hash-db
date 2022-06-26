@@ -77,9 +77,9 @@ Data Storage::readData()
 	size_t keyLen = readInt();
 	size_t valLen = readInt();
 	size_t deleted = readInt();
-	char   *k     = new char[keyLen];
+	char   *k     = new char[keyLen+1]();
 	reader.read(k, keyLen);
-	char *v = new char[valLen];
+	char *v = new char[valLen+1]();
 	reader.read(v, valLen);
 	return Data{keyLen, valLen, deleted, k, v};
 }
@@ -94,6 +94,7 @@ void Storage::writeInt(int len)
 int Storage::readInt()
 {
 	char numChar[INT_SIZE];
+	numChar[3] = 1;
 	reader.read(numChar, INT_SIZE);
 	return std::stoi(numChar);
 }
