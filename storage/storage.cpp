@@ -41,6 +41,7 @@ FileStorageIndex Storage::del(const std::string &k)
 	writeInt(k.length());
 	writeInt(0);
 	writeInt(DELETED);
+	writer << k;
 	writer.flush();
 	dbIndex[k] = new FileStorageIndex{begin};
 	return FileStorageIndex{begin};

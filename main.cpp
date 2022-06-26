@@ -45,6 +45,9 @@ void test0()
 	assert(storage.get("hello0") == nullptr);
 	assert(storage.get("hello4") == nullptr);
 	assert(storage.get("hello-1") == nullptr);
+	std::string s("this is a long sentence and we used it to test!!!");
+	storage.set("hello0", s.c_str(), s.length());
+	assert(storage.get("hello0") == s);
 }
 
 int main(int argc, char **argv)
