@@ -12,12 +12,14 @@
 #include <map>
 #include "data.hpp"
 
-const size_t INT_SIZE = 8;
+const size_t INT_SIZE    = 8;
+const size_t DELETED     = 0;
+const size_t NOT_DELETED = 1;
 
 class Storage
 {
 public:
-	explicit Storage(std::istream& r, std::ostream& w);
+	explicit Storage(std::istream &r, std::ostream &w);
 
 	virtual ~Storage();
 

@@ -25,8 +25,11 @@ const char *read(Storage &storage, const char *key)
 
 void test0()
 {
-	std::stringstream ss;
-	Storage           storage(ss, ss);
+//	std::stringstream ss;
+//	Storage           storage(ss, ss);
+	std::ifstream in("/Users/dhy/tmp/db/data");
+	std::ofstream ou("/Users/dhy/tmp/db/data");
+	Storage storage(in, ou);
 
 	writeData(storage);
 	assert(std::string(read(storage, "hello0")) == "world0");
@@ -37,6 +40,11 @@ void test0()
 	assert(std::string(read(storage, "hello4")) == "world4");
 	storage.set("hello4", "new world4", 10);
 	assert(std::string(read(storage, "hello4")) == "new world4");
+	storage.del("hello0");
+	storage.del("hello4");
+	assert(storage.get("hello0") == nullptr);
+	assert(storage.get("hello4") == nullptr);
+	assert(storage.get("hello-1") == nullptr);
 }
 
 int main(int argc, char **argv)

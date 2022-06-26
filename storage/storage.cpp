@@ -9,16 +9,17 @@
 const char *Storage::get(const std::string &k)
 {
 	FileStorageIndex *index = dbIndex[k];
-	if (index != nullptr)
-	{
-		reader.seekg(index->offset);
-		Data data = readData();
-		return data.val;
-	}
-	else
+	if (index == nullptr)
 	{
 		return nullptr;
 	}
+	reader.seekg(index->offset);
+	Data data = readData();
+	if (data.deleted == DELETED)
+	{
+		return nullptr;
+	}
+	return data.val;
 }
 
 FileStorageIndex Storage::set(const std::string &k, const char *data, size_t dataLen)
@@ -26,6 +27,7 @@ FileStorageIndex Storage::set(const std::string &k, const char *data, size_t dat
 	std::ostream::pos_type begin = writer.tellp();
 	writeInt(k.length());
 	writeInt(dataLen);
+	writeInt(NOT_DELETED);
 	writer << k;
 	writer << data;
 	writer.flush();
@@ -35,7 +37,13 @@ FileStorageIndex Storage::set(const std::string &k, const char *data, size_t dat
 
 FileStorageIndex Storage::del(const std::string &k)
 {
-	return FileStorageIndex{0};
+	std::ostream::pos_type begin = writer.tellp();
+	writeInt(k.length());
+	writeInt(0);
+	writeInt(DELETED);
+	writer.flush();
+	dbIndex[k] = new FileStorageIndex{begin};
+	return FileStorageIndex{begin};
 }
 
 Storage::~Storage()
@@ -67,11 +75,12 @@ Data Storage::readData()
 {
 	size_t keyLen = readInt();
 	size_t valLen = readInt();
+	size_t deleted = readInt();
 	char   *k     = new char[keyLen];
 	reader.read(k, keyLen);
 	char *v = new char[valLen];
 	reader.read(v, valLen);
-	return Data{keyLen, valLen, k, v};
+	return Data{keyLen, valLen, deleted, k, v};
 }
 
 void Storage::writeInt(int len)
@@ -90,7 +99,7 @@ int Storage::readInt()
 
 bool Storage::nextData()
 {
-	char ch  = reader.get();
+	char ch = reader.get();
 	reader.seekg(-1, std::ios::cur);
 	if (ch == -1)
 	{
@@ -99,7 +108,7 @@ bool Storage::nextData()
 	return ch != -1;
 }
 
-Storage::Storage(std::istream& r, std::ostream& w): reader(r), writer(w)
+Storage::Storage(std::istream &r, std::ostream &w) : reader(r), writer(w)
 {
 	initIndex();
 }

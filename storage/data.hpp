@@ -12,12 +12,15 @@ class Data
 public:
 	const size_t keyLen;
 	const size_t valLen;
+	// as a considering of simplify, use size_t instead of bool
+	size_t deleted;
 	std::string  key;
 	const char   *val;
 
-	Data(const size_t keyLen, const size_t valLen, std::string key, const char *val) :
+	Data(const size_t keyLen, const size_t valLen, size_t  deleted, std::string key, const char *val) :
 			keyLen(keyLen),
 			valLen(valLen),
+			deleted(deleted),
 			key(std::move(key)),
 			val(val)
 	{}
